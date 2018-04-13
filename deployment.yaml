@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wlp-daytrader3-jenkins
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: wlp-daytrader3-jenkins
+    spec:
+      containers:
+      - name: wlp-daytrader3-jenkins
+        image: aha05229/daytrader3-ee6
+        ports:
+        - containerPort: 9080
+          protocol: TCP
+        env:
+        - name: DAYTRADER3_CONTEXT_ROOT_URL
+          value: http://localhost:9080/daytrader
+

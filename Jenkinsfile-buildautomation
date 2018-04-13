@@ -1,17 +1,48 @@
 pipeline {
   agent any
+  parameters {
+    string(name: 'DAYTRADER3_CONTEXT_ROOT_URL', defaultValue: 'http://localhost:9080/daytrader')
+    string(name: 'DOCKERHUB_USERNAME', defaultValue: 'aha05229')
+  }
   stages {
-    stage('Build Automation') {
+    stage('Continuous Integration') {
       steps {
         sh '''
-          echo "BUILD NUMBER: ${BUILD_NUMBER}"
           cd dt-ejb
           mvn clean install
           cd ../Rest
           mvn clean install
           cd ../web
           mvn clean install
+          cd ../daytrader3-ee6
+          mvn clean verify -Pci-docker
+          cd ..
         '''
+      }
+    }
+  stage('Continuous Delivery') {
+    steps {
+      withCredentials([usernamePassword(credentialsId: 'aha05229', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        sh '''
+          docker tag daytrader3-ee6:1.0-SNAPSHOT ${DOCKERHUB_USERNAME}/daytrader3-ee6
+          docker login -u ${USERNAME} -p ${PASSWORD}
+          docker push ${DOCKERHUB_USERNAME}/daytrader3-ee6
+        '''
+      }
+      sh '''
+        #!/bin/bash
+        if kubectl describe service wlp-daytrader3-jenkins; then
+          echo "Service already exists, delete first"
+          kubectl delete service wlp-daytrader3-jenkins
+        fi
+        if kubectl describe deployment wlp-daytrader3-jenkins; then
+          echo "Application already exists, delete first"
+          kubectl delete deployment wlp-daytrader3-jenkins
+        fi
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
+        minikube service wlp-daytrader3-jenkins --url
+      '''
       }
     }
   }

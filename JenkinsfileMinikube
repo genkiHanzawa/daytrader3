@@ -2,7 +2,7 @@ pipeline {
   agent any
   parameters {
     string(name: 'DAYTRADER3_CONTEXT_ROOT_URL', defaultValue: 'http://localhost:9080/daytrader')
-    string(name: 'DOCKERHUB_USERNAME', defaultValue: '594fbb65-cfab-4f37-97d3-78b4b5a21805')
+    string(name: 'DOCKERHUB_USERNAME', defaultValue: 'aha05229')
   }
   stages {
     stage('Continuous Integration') {

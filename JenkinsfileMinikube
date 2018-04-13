@@ -2,7 +2,7 @@ pipeline {
   agent any
   parameters {
     string(name: 'DAYTRADER3_CONTEXT_ROOT_URL', defaultValue: 'http://localhost:9080/daytrader')
-    string(name: 'DOCKERHUB_USERNAME', defaultValue: 'aha05229')
+    string(name: 'DOCKERHUB_USERNAME', defaultValue: '594fbb65-cfab-4f37-97d3-78b4b5a21805')
   }
   stages {
     stage('Continuous Integration') {
@@ -22,7 +22,7 @@ pipeline {
     }
   stage('Continuous Delivery') {
     steps {
-      withCredentials([usernamePassword(credentialsId: 'aha05229', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+      withCredentials([usernamePassword(credentialsId: '594fbb65-cfab-4f37-97d3-78b4b5a21805', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
         sh '''
           docker tag daytrader3-ee6:1.0-SNAPSHOT ${DOCKERHUB_USERNAME}/daytrader3-ee6
           docker login -u ${USERNAME} -p ${PASSWORD}
